@@ -22,7 +22,7 @@ import com.archpatterns.walletmanager.services.WalletService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping(value = "/api/wallet", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "wallet-manager/api", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
 public class WalletController {
 

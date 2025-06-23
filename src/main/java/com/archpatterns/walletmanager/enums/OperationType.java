@@ -1,4 +1,4 @@
-package com.archpatterns.walletmanager.models;
+package com.archpatterns.walletmanager.enums;
 
 public enum OperationType {
 

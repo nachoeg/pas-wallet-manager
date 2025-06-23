@@ -2,7 +2,7 @@ package com.archpatterns.walletmanager.dtos;
 
 import java.time.LocalDateTime;
 
-import com.archpatterns.walletmanager.models.OperationType;
+import com.archpatterns.walletmanager.enums.OperationType;
 
 import lombok.Builder;
 import lombok.Data;

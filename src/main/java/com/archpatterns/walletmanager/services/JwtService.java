@@ -1,0 +1,77 @@
+package com.archpatterns.walletmanager.services;
+
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import java.security.Key;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class JwtService {
+  private static final String SECRET = "clave-secreta-pqowieuyrrtgfdjhskslasmxcmncbcvsgsjwqkeuwim";
+  private static final long EXPIRATION = 1000 * 60 * 60; // 60 minutos
+
+  private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
+
+  public String generateToken(String email, String[] roles) {
+    var a = new HashMap<String, Object>();
+    a.put("authorities", roles);
+    return Jwts.builder()
+        .setSubject(email)
+        .setIssuedAt(new Date())
+        .addClaims(a)
+        .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
+        .signWith(key, SignatureAlgorithm.HS256)
+        .compact();
+  }
+
+  public String[] extractRoles(String token) {
+    try {
+      var claims = Jwts.parserBuilder()
+          .setSigningKey(key)
+          .build()
+          .parseClaimsJws(token)
+          .getBody();
+      var authorities = claims.get("authorities", List.class);
+      if (authorities == null) {
+        return new String[0];
+      }
+      return ((List<?>) authorities).stream()
+          .map(Object::toString)
+          .toArray(String[]::new);
+    } catch (Exception ex) {
+      log.error("Error: {}", ex.getMessage());
+      return new String[0];
+    }
+  }
+
+  public String extractEmail(String token) {
+    return Jwts.parserBuilder()
+        .setSigningKey(key)
+        .build()
+        .parseClaimsJws(token)
+        .getBody()
+        .getSubject();
+  }
+
+  public boolean isTokenValid(String token, String email) {
+    return email.equals(extractEmail(token)) && !isTokenExpired(token);
+  }
+
+  private boolean isTokenExpired(String token) {
+    return Jwts.parserBuilder()
+        .setSigningKey(key)
+        .build()
+        .parseClaimsJws(token)
+        .getBody()
+        .getExpiration()
+        .before(new Date());
+  }
+}

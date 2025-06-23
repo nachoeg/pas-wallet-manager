@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.archpatterns.walletmanager.enums.OperationType;
 import com.archpatterns.walletmanager.exceptions.InsufficientFundsException;
 
 import jakarta.persistence.CascadeType;
@@ -25,7 +26,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "wallets")
+@Table(name = "WALLETS")
 public class Wallet {
 
 	@Id
