@@ -1,0 +1,39 @@
+test:
+  stage: test
+  image: maven:3.9.6-eclipse-temurin-17 
+  script:
+    - mvn clean test 
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_BRANCH == "main"'
+
+
+build_image:
+  stage: build
+  image: docker:cli
+  services:
+    - docker:dind
+  variables:
+    DOCKER_IMAGE_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  script:
+    - docker build --pull -t "$DOCKER_IMAGE_NAME" . 
+    - docker push "$DOCKER_IMAGE_NAME" 
+    - |
+      # Etiquetado y Push solo si estamos en 'main' o 'develop'
+      if [[ "$CI_COMMIT_BRANCH" == "main" || "$CI_COMMIT_BRANCH" == "develop" ]]; then
+        # Etiquetar como 'latest' en main y develop
+        docker tag "$DOCKER_IMAGE_NAME" "$CI_REGISTRY_IMAGE:latest"
+        docker push "$CI_REGISTRY_IMAGE:latest"
+        
+        # Agregar versionado semántico en 'main' (solo en la rama main)
+        if [[ "$CI_COMMIT_BRANCH" == "main" ]]; then
+          VERSION_TAG=$(git describe --tags --abbrev=0 || echo "v1.0.3")
+          docker tag "$DOCKER_IMAGE_NAME" "$CI_REGISTRY_IMAGE:$VERSION_TAG"
+          docker push "$CI_REGISTRY_IMAGE:$VERSION_TAG"
+        fi
+      fi
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_BRANCH == "main"'
+
+
