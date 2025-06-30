@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.archpatterns.walletmanager.dtos.DataQueue;
+import com.archpatterns.walletmanager.dtos.ListData;
 import com.archpatterns.walletmanager.dtos.OperationDto;
 import com.archpatterns.walletmanager.dtos.WalletDto;
 import com.archpatterns.walletmanager.exceptions.WalletNotFoundException;
@@ -57,6 +59,31 @@ public class WalletService {
 				.orElseThrow(() -> new WalletNotFoundException("Wallet not found for user ID: " + userId));
 		return wallet.getOperations().stream().map(op -> OperationDto.builder().amount(op.getAmount())
 				.timestamp(op.getTimestamp()).type(op.getType()).build()).toList();
+	}
+
+	public boolean checkMoney(ListData data) {
+
+		if (data == null || data.getListData() == null || data.getListData().isEmpty()) {
+			return false;
+		}
+
+		for (DataQueue item : data.getListData()) {
+			Long userId = item.getBuyerId();
+			Double priceTotal = item.getPriceTotal();
+
+			if (userId == null || userId <= 0 || priceTotal == null || priceTotal <= 0) {
+				return false;
+			}
+
+			Wallet wallet = walletRepository.findByUserId(userId)
+					.orElseThrow(() -> new WalletNotFoundException("Wallet not found for user ID: " + userId));
+
+			if (wallet.getBalance() < priceTotal) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	private WalletDto toDto(Wallet wallet) {
