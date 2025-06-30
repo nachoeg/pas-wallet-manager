@@ -10,10 +10,11 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.archpatterns</groupId>
-	<artifactId>walletmanager</artifactId>
+	<artifactId>wallet-manager</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>wallet-manager</name>
 	<description>Wallet Application</description>
+	<packaging>jar</packaging>
 	<url />
 	<licenses>
 		<license />
