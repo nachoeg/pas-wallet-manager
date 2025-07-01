@@ -5,6 +5,7 @@ import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,20 +17,16 @@ public class Publisher {
 	@Autowired
 	private RabbitTemplate rabbitTemplate;
 
-	@Autowired
-	@Qualifier("confirm-checkout")
+	@Value("${rabbitmq.queue.name.confirm-checkout}")
 	private String confirmCheckoutQueue;
 
-	@Autowired
-	@Qualifier("make-order")
+	@Value("${rabbitmq.queue.name.make-order}")
 	private String makeOrderQueue;
 
-	@Autowired
-	@Qualifier("reject-checkout")
+	@Value("${rabbitmq.queue.name.reject-checkout}")
 	private String rejectCheckoutQueue;
 
-	@Autowired
-	@Qualifier("reset-stock")
+	@Value("${rabbitmq.queue.name.reset-stock}")
 	private String resetStockQueue;
 
 	public void confirmCheckout(Object data) {

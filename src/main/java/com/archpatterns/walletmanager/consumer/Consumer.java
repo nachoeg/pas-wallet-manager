@@ -4,7 +4,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
-import com.archpatterns.walletmanager.dtos.ListData;
+import com.archpatterns.walletmanager.dtos.Listdata;
 import com.archpatterns.walletmanager.publisher.Publisher;
 import com.archpatterns.walletmanager.services.WalletService;
 
@@ -20,7 +20,7 @@ public class Consumer {
 	private final Publisher publisher;
 
 	@RabbitListener(queues = { "${rabbitmq.queue.name.check-money}"})
-	public void receiveCheckMoney(@Payload ListData data) {
+	public void receiveCheckMoney(@Payload Listdata data) {
 		log.info("Received data: {}", data);
 		if (walletService.checkMoney(data)) {
 			log.info("Money check passed for data: {}", data);

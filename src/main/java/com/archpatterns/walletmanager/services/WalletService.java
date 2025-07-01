@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.archpatterns.walletmanager.dtos.DataQueue;
-import com.archpatterns.walletmanager.dtos.ListData;
+import com.archpatterns.walletmanager.dtos.Listdata;
 import com.archpatterns.walletmanager.dtos.OperationDto;
 import com.archpatterns.walletmanager.dtos.WalletDto;
 import com.archpatterns.walletmanager.exceptions.WalletNotFoundException;
@@ -61,7 +61,7 @@ public class WalletService {
 				.timestamp(op.getTimestamp()).type(op.getType()).build()).toList();
 	}
 
-	public boolean checkMoney(ListData data) {
+	public boolean checkMoney(Listdata data) {
 
 		if (data == null || data.getListData() == null || data.getListData().isEmpty()) {
 			return false;
