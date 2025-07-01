@@ -22,12 +22,18 @@ public class Consumer {
 	@RabbitListener(queues = { "${rabbitmq.queue.name.check-money}"})
 	public void receiveCheckMoney(@Payload Listdata data) {
 		log.info("Received data: {}", data);
-		if (walletService.checkMoney(data)) {
-			log.info("Money check passed for data: {}", data);
-			publisher.confirmCheckout(data);
-			publisher.makeOrder(data);
-		} else {
-			log.warn("Money check failed for data: {}", data);
+		try {
+			if (walletService.checkMoney(data)) {
+				log.info("Money check passed for data: {}", data);
+				publisher.confirmCheckout(data);
+				publisher.makeOrder(data);
+			} else {
+				log.warn("Money check failed for data: {}", data);
+				publisher.rejectCheckout(data);
+				publisher.resetStock(data);
+			}
+		} catch (Exception e) {
+			log.error(e.getMessage());
 			publisher.rejectCheckout(data);
 			publisher.resetStock(data);
 		}
