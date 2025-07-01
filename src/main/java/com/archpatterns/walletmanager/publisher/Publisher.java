@@ -1,10 +1,10 @@
 package com.archpatterns.walletmanager.publisher;
 
+import com.archpatterns.walletmanager.dtos.Listdata;
 import org.springframework.stereotype.Component;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 
 import lombok.extern.slf4j.Slf4j;
@@ -29,22 +29,22 @@ public class Publisher {
 	@Value("${rabbitmq.queue.name.reset-stock}")
 	private String resetStockQueue;
 
-	public void confirmCheckout(Object data) {
+	public void confirmCheckout(Listdata data) {
 		log.info("Publishing to confirm checkout queue: {}", confirmCheckoutQueue);
 		rabbitTemplate.convertAndSend(confirmCheckoutQueue, data);
 	}
 
-	public void makeOrder(Object data) {
+	public void makeOrder(Listdata data) {
 		log.info("Publishing to make order queue: {}", makeOrderQueue);
 		rabbitTemplate.convertAndSend(makeOrderQueue, data);
 	}
 
-	public void rejectCheckout(Object data) {
+	public void rejectCheckout(Listdata data) {
 		log.info("Publishing to reject checkout queue: {}", rejectCheckoutQueue);
 		rabbitTemplate.convertAndSend(rejectCheckoutQueue, data);
 	}
 
-	public void resetStock(Object data) {
+	public void resetStock(Listdata data) {
 		log.info("Publishing to reset stock queue: {}", resetStockQueue);
 		rabbitTemplate.convertAndSend(resetStockQueue, data);
 	}
