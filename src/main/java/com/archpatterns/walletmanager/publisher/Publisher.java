@@ -1,4 +1,4 @@
-package publisher;
+package com.archpatterns.walletmanager.publisher;
 
 import org.springframework.stereotype.Component;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;

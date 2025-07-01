@@ -1,15 +1,15 @@
-package consumer;
+package com.archpatterns.walletmanager.consumer;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
 import com.archpatterns.walletmanager.dtos.ListData;
+import com.archpatterns.walletmanager.publisher.Publisher;
 import com.archpatterns.walletmanager.services.WalletService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import publisher.Publisher;
 
 @Slf4j
 @Component
