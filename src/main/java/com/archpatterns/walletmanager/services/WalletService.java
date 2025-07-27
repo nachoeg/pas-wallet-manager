@@ -61,29 +61,17 @@ public class WalletService {
 				.timestamp(op.getTimestamp()).type(op.getType()).build()).toList();
 	}
 
-	public boolean checkMoney(Listdata data) {
-
+	@Transactional
+	public WalletDto processCheckout(Listdata data) {
 		if (data == null || data.getListData() == null || data.getListData().isEmpty()) {
-			return false;
+			throw new IllegalArgumentException("Invalid checkout data");
 		}
 
-		for (DataQueue item : data.getListData()) {
-			Long userId = item.getBuyerId();
-			Double priceTotal = item.getPriceTotal();
+		Double totalPrice = data.getListData().stream().mapToDouble(DataQueue::getPriceTotal).sum();
+		Long userId = data.getListData().stream().map(DataQueue::getBuyerId).findFirst()
+				.orElseThrow(() -> new IllegalArgumentException("Buyer ID not found"));
 
-			if (userId == null || userId <= 0 || priceTotal == null || priceTotal <= 0) {
-				return false;
-			}
-
-			Wallet wallet = walletRepository.findByUserId(userId)
-					.orElseThrow(() -> new WalletNotFoundException("Wallet not found for user ID: " + userId));
-
-			if (wallet.getBalance() < priceTotal) {
-				return false;
-			}
-		}
-
-		return true;
+		return this.withdraw(userId, totalPrice);
 	}
 
 	private WalletDto toDto(Wallet wallet) {

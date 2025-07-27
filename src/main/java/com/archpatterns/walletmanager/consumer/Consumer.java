@@ -5,6 +5,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
 import com.archpatterns.walletmanager.dtos.Listdata;
+import com.archpatterns.walletmanager.dtos.WalletDto;
 import com.archpatterns.walletmanager.publisher.Publisher;
 import com.archpatterns.walletmanager.services.WalletService;
 
@@ -19,21 +20,16 @@ public class Consumer {
 	private final WalletService walletService;
 	private final Publisher publisher;
 
-	@RabbitListener(queues = { "${rabbitmq.queue.name.check-money}"})
+	@RabbitListener(queues = { "${rabbitmq.queue.name.check-money}" })
 	public void receiveCheckMoney(@Payload Listdata data) {
 		log.info("Received data: {}", data);
 		try {
-			if (walletService.checkMoney(data)) {
-				log.info("Money check passed for data: {}", data);
-				publisher.confirmCheckout(data);
-				publisher.makeOrder(data);
-			} else {
-				log.warn("Money check failed for data: {}", data);
-				publisher.rejectCheckout(data);
-				publisher.resetStock(data);
-			}
+			WalletDto updatedWallet = walletService.processCheckout(data);
+			log.info("Checkout processed successfully, new balance: {}", updatedWallet.getBalance());
+			publisher.confirmCheckout(data);
+			publisher.makeOrder(data);
 		} catch (Exception e) {
-			log.error(e.getMessage());
+			log.error("Checkout failed: {}", e.getMessage());
 			publisher.rejectCheckout(data);
 			publisher.resetStock(data);
 		}
